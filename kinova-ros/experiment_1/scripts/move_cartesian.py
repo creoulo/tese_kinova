@@ -36,13 +36,8 @@ def argumentParser(argument):
                     help='Insert y coordinate in meters')
   parser.add_argument('z_pick', metavar='z', type=str,
                     help='Insert z coordinate in meters')
-
-  parser.add_argument('x_place', metavar='x', type=str,
-                    help='Insert x coordinate in meters')
-  parser.add_argument('y_place', metavar='y', type=str,
-                    help='Insert y coordinate in meters')
-  parser.add_argument('z_place', metavar='z', type=str,
-                    help='Insert z coordinate in meters')
+  parser.add_argument('vel', metavar='v', type=str,
+                    help='Insert velocity between 0 and 2')
 
   #args_ = parser.parse_args(argument)
   argv = rospy.myargv()
@@ -53,26 +48,17 @@ def argumentParser(argument):
   x = float(args_.x_pick)
   y = float(args_.y_pick)
   z = float(args_.z_pick)
-  pick_pose = Pose()
-  pick_pose.position.x = x
-  pick_pose.position.y = y
-  pick_pose.position.z = z
+  v = float(args_.vel)
+  target_pose = Pose()
+  target_pose.position.x = x
+  target_pose.position.y = y
+  target_pose.position.z = z
   q = quaternion_from_euler(0, -pi, 0)
-  pick_pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
+  target_pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
 
-  x = float(args_.x_place)
-  y = float(args_.y_place)
-  z = float(args_.z_place)
-  place_pose = Pose()
-  place_pose.position.x = x
-  place_pose.position.y = y
-  place_pose.position.z = z
-  q = quaternion_from_euler(0, -pi, 0)
-  place_pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
+  return prefix, nbJoints, nbfingers, target_pose, v
 
-  return prefix, nbJoints, nbfingers, pick_pose, place_pose
-
-def moveJoint (jointcmds):
+def moveJoint (jointcmds, vel):
   prefix = 'j2n6s300'
   nbJoints = 6
   topic_name = '/' + prefix + '/effort_joint_trajectory_controller/command'
@@ -85,7 +71,7 @@ def moveJoint (jointcmds):
     jointCmd.joint_names.append(prefix +'_joint_'+str(i+1))
     point.positions.append(jointcmds[i])
     point.velocities.append(0)
-    point.accelerations.append(0)
+    point.accelerations.append(vel)
     point.effort.append(0)
   jointCmd.points.append(copy.deepcopy(point))
 
@@ -121,60 +107,18 @@ def moveFingers (jointcmds):
 
 if __name__ == '__main__':
   try:
-    rospy.init_node('pickup_place_cartesian')
-    prefix, nbJoints, nbfingers, pick_pose, place_pose = argumentParser(None)
-    req_path = rospy.ServiceProxy('/experiment_1_msgs/CartPath', experiment_1_msgs.srv.CartPath )
-    go_home = rospy.ServiceProxy('/experiment_1_msgs/NamedTargetArm', experiment_1_msgs.srv.NamedTargetArm)
+    rospy.init_node('move_cartesian')
+    prefix, nbJoints, nbfingers, target_pose, vel = argumentParser(None)
+    req_path = rospy.ServiceProxy('/experiment_1_msgs/CartPath', experiment_1_msgs.srv.CartPath)
 
-    #open gripper
-    moveFingers([GRIPPER_OPEN, GRIPPER_OPEN, GRIPPER_OPEN])
-
-    #PICK-----------------------------------------------------------------------
-    pick_over_pose = copy.deepcopy(pick_pose)
-    pick_over_pose.position.z = pick_pose.position.z + 0.2
     waypoints = []
-    waypoints.append(pick_over_pose)
-    waypoints.append(pick_pose)
-
+    waypoints.append(target_pose)
     resp_path = req_path(waypoints)
-    while resp_path.quality < 0.8:
-        resp_path = req_path(waypoints)
 
     for i in range(0, len(resp_path.path.joint_trajectory.points)-1):
         jointcmds = resp_path.path.joint_trajectory.points[i].positions
-        moveJoint(jointcmds)
-    #Close gripper
-    moveFingers([GRIPPER_CLOSE, GRIPPER_CLOSE, GRIPPER_CLOSE])
+        moveJoint(jointcmds, vel)
 
-    #PLACE----------------------------------------------------------------------
-    place_over_pose = copy.deepcopy(place_pose)
-    place_over_pose.position.z = place_pose.position.z + 0.3
-    waypoints = []
-    waypoints.append(pick_over_pose)
-    waypoints.append(place_over_pose)
-    waypoints.append(place_pose)
-
-    resp_path = req_path(waypoints)
-    while resp_path.quality < 0.6:
-        resp_path = req_path(waypoints)
-
-    for i in range(0, len(resp_path.path.joint_trajectory.points)-1):
-        jointcmds = resp_path.path.joint_trajectory.points[i].positions
-        moveJoint(jointcmds)
-    #open gripper
-    moveFingers([GRIPPER_OPEN, GRIPPER_OPEN, GRIPPER_OPEN])
-
-    #HOME-----------------------------------------------------------------------
-    waypoints = []
-    waypoints.append(place_over_pose)
-    resp_path = req_path(waypoints)
-    while resp_path.quality < 0.8:
-        resp_path = req_path(waypoints)
-
-    for i in range(0, len(resp_path.path.joint_trajectory.points)-1):
-        jointcmds = resp_path.path.joint_trajectory.points[i].positions
-        moveJoint(jointcmds)
-    #go_home("Home")#this movement is not computed with compute_cartesian_path
 
   except rospy.ROSInterruptException:
     print "program interrupted before completion"

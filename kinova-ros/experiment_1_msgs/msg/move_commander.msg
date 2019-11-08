@@ -1,1 +1,0 @@
-moveit_commander/MoveGroupCommander move_group
