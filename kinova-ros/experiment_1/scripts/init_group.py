@@ -15,8 +15,7 @@ def initServices(move_group_arm, move_group_gripper):
     rospy.Service(name="experiment_1_msgs/NamedTargetGripper", service_class=NamedTargetGripper,
                                                     handler=named_target_gripper_handler)
 
-    rospy.Service(name="experiment_1_msgs/PickPlace", service_class=PickPlace,
-                                                    handler=pick_place_handler)
+    
 
 #define all the handlers
 def cart_path_handler(req):
@@ -38,27 +37,6 @@ def named_target_gripper_handler(req):
     move_group_gripper.stop()
     success = True
     return NamedTargetGripperResponse(success)
-
-def pick_place_handler(req):
-    x = req.pick.x
-    y = req.pick.y
-    z = req.pick.z
-    pick_pose = Pose()
-    pick_pose.position.x = x
-    pick_pose.position.y = y
-    pick_pose.position.z = z
-    q = quaternion_from_euler(0, -pi, 0)
-    pick_pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
-
-    x = req.place.x
-    y = req.place.y
-    z = req.place.z
-    place_pose = Pose()
-    place_pose.position.x = x
-    place_pose.position.y = y
-    place_pose.position.z = z
-    q = quaternion_from_euler(0, -pi, 0)
-    place_pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
 
 
 if __name__ == '__main__':

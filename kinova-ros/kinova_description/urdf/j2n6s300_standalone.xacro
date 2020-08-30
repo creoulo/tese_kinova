@@ -49,48 +49,19 @@
 
   <xacro:j2n6s300  base_parent="${robot_root}"/>
 
-	<gazebo reference="j2n6s300_link_finger_1_collision">
-		<implicitSpringDamper>1</implicitSpringDamper>
-		<mu1>100000.0</mu1>
-		<mu2>100000.0</mu2>
-		<minDepth>0.003</minDepth>
-		<maxVel>0</maxVel>
-	</gazebo>
-	<gazebo reference="j2n6s300_link_finger_2_collision">
-		<implicitSpringDamper>1</implicitSpringDamper>
-		<mu1>100000.0</mu1>
-		<mu2>100000.0</mu2>
-		<minDepth>0.003</minDepth>
-		<maxVel>0</maxVel>
-	</gazebo>
-	<gazebo reference="j2n6s300_link_finger_3_collision">
-		<implicitSpringDamper>1</implicitSpringDamper>
-		<mu1>100000.0</mu1>
-		<mu2>100000.0</mu2>
-		<minDepth>0.003</minDepth>
-		<maxVel>0</maxVel>
-	</gazebo>
-	
-	<gazebo reference="j2n6s300_link_finger_1">
-		<implicitSpringDamper>1</implicitSpringDamper>
-		<mu1>100000.0</mu1>
-		<mu2>100000.0</mu2>
-		<minDepth>0.003</minDepth>
-		<maxVel>0</maxVel>
-	</gazebo>
-	<gazebo reference="j2n6s300_link_finger_2">
-		<implicitSpringDamper>1</implicitSpringDamper>
-		<mu1>100000.0</mu1>
-		<mu2>100000.0</mu2>
-		<minDepth>0.003</minDepth>
-		<maxVel>0</maxVel>
-	</gazebo>
-	<gazebo reference="j2n6s300_link_finger_3">
-		<implicitSpringDamper>1</implicitSpringDamper>
-		<mu1>100000.0</mu1>
-		<mu2>100000.0</mu2>
-		<minDepth>0.003</minDepth>
-		<maxVel>0</maxVel>
-	</gazebo>
+	<!--correct image from camera-->
+	<link name="camera_link"/>
+	<joint name="connect_camera and world" type="fixed">
+    <parent link="world"/>
+    <child link="camera_link"/>
+  </joint>
+  <joint name="camera_optical_joint" type="fixed">
+		<!--it takes of the height of the camera and the amount of tilt in the cam -->
+    <origin xyz="0.0 0.0 0.0" rpy="${-pi/2 - 0.5} 0.0 ${-pi/2}"/><!-- the x should be -1.3m -->
+    <parent link="camera_link"/>
+    <child link="camera_link_optical"/>
+  </joint>
+
+  <link name="camera_link_optical"/>
 
 </robot>

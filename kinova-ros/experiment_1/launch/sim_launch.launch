@@ -1,18 +1,24 @@
 <launch>
   <arg name="kinova_robotType" default="j2n6s300"/>
   <arg name="world_name" default="$(find experiment_1)/worlds/jaco_tic_tac_toe_kinect.world"/>
+  <arg name="debug" default="false"/>
+  <arg name="verbose" default="false"/>
 
   <!-- launch gazebo and controllers-->
   <include file="$(find kinova_gazebo)/launch/robot_launch.launch">
     <arg name="world_name" value="$(arg world_name)"/>
-    <arg name="verbose" value="True"/>
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="verbose" value="$(arg verbose)"/>
   </include>
 
   <!-- launch moveGroup-->
   <include file="$(find j2n6s300_moveit_config)/launch/$(arg kinova_robotType)_gazebo_demo.launch"/>
 
   <!-- init servers -->
-  <node name="init" pkg="experiment_1" type="init_group.py"/>
+  <node name="init_srv" pkg="experiment_1" type="init_group.py"/>
+
+  <!-- environment detection -->
+  <!--<node name="env_detect" pkg="experiment_1" type="kinect_detection.py"/>-->
 
   <!-- Static transform that connects a publisher topic to a node  x y z (yaw pitch roll)/quaternion frame_id child_frame_id  period (milliseconds)-->
   <node name="static_tf_pub_board" pkg="tf" type="static_transform_publisher" args="-0.002350 -0.400333 0.00015  0 0 0 1 world tic_tac_toe_link 100"/>
