@@ -15,7 +15,7 @@ def initServices(move_group_arm, move_group_gripper):
     rospy.Service(name="experiment_1_msgs/NamedTargetGripper", service_class=NamedTargetGripper,
                                                     handler=named_target_gripper_handler)
 
-    
+
 
 #define all the handlers
 def cart_path_handler(req):
@@ -50,4 +50,4 @@ if __name__ == '__main__':
 
         rospy.spin()
     except rospy.ROSInterruptException:
-      print "program interrupted before completion"
+      print "program ini_group interrupted before completion"

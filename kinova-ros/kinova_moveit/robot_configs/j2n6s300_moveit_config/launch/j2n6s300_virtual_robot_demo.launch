@@ -18,14 +18,14 @@
   </include>
 
   <!-- If needed, broadcast static tf for robot root -->
-  
+
 
   <!-- We do not have a robot connected, so publish fake joint states -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/>
     <rosparam param="/source_list">[/move_group/fake_controller_joint_states]</rosparam>
-		<param name="zeros/j2n6s300_joint_2" value="3.1415"/>		
-	  <param name="zeros/j2n6s300_joint_3" value="3.1415"/>    
+		<param name="zeros/j2n6s300_joint_2" value="3.1415"/>
+	  <param name="zeros/j2n6s300_joint_3" value="3.1415"/>
   </node>
 
   <!-- Given the published joint states, publish tf for the robot links -->

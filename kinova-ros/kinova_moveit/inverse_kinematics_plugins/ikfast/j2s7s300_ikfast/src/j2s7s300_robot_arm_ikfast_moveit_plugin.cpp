@@ -48,7 +48,8 @@
 #include <ros/ros.h>
 #include <moveit/kinematics_base/kinematics_base.h>
 #include <urdf/model.h>
-#include <tf_conversions/tf_kdl.h>
+//#include <tf_conversions/tf_kdl.h>
+#include <tf2_kdl/tf2_kdl.h>
 
 // Need a floating point tolerance when checking joint limits, in case the joint starts at limit
 const double LIMIT_TOLERANCE = .0000001;
@@ -717,7 +718,8 @@ bool IKFastKinematicsPlugin::getPositionFK(const std::vector<std::string> &link_
     p_out.M.data[i] = eerot[i];
 
   poses.resize(1);
-  tf::poseKDLToMsg(p_out,poses[0]);
+  //tf::poseKDLToMsg(p_out,poses[0]);
+  poses[0] = tf2::toMsg(p_out);
 
   return valid;
 }
@@ -856,7 +858,8 @@ bool IKFastKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
   // Initialize
 
   KDL::Frame frame;
-  tf::poseMsgToKDL(ik_pose,frame);
+  //tf::poseMsgToKDL(ik_pose,frame);
+  tf2::fromMsg(ik_pose, frame);
 
   std::vector<double> vfree(free_params_.size());
 
@@ -870,6 +873,7 @@ bool IKFastKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
   // Handle consitency limits if needed
   int num_positive_increments;
   int num_negative_increments;
+  std::map<int, double> redundant_joint_discretization_;
 
   if(!consistency_limits.empty())
   {
@@ -878,13 +882,17 @@ bool IKFastKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
     double max_limit = fmin(joint_max_vector_[free_params_[0]], initial_guess+consistency_limits[free_params_[0]]);
     double min_limit = fmax(joint_min_vector_[free_params_[0]], initial_guess-consistency_limits[free_params_[0]]);
 
-    num_positive_increments = (int)((max_limit-initial_guess)/search_discretization_);
-    num_negative_increments = (int)((initial_guess-min_limit)/search_discretization_);
+    //num_positive_increments = (int)((max_limit-initial_guess)/search_discretization_);
+    //num_negative_increments = (int)((initial_guess-min_limit)/search_discretization_);
+    num_positive_increments = (int)((max_limit-initial_guess)/redundant_joint_discretization_.at(free_params_[0]));
+    num_negative_increments = (int)((initial_guess-min_limit)/redundant_joint_discretization_.at(free_params_[0]));
   }
   else // no consitency limits provided
   {
-    num_positive_increments = (joint_max_vector_[free_params_[0]]-initial_guess)/search_discretization_;
-    num_negative_increments = (initial_guess-joint_min_vector_[free_params_[0]])/search_discretization_;
+    //num_positive_increments = (joint_max_vector_[free_params_[0]]-initial_guess)/search_discretization_;
+    //num_negative_increments = (initial_guess-joint_min_vector_[free_params_[0]])/search_discretization_;
+    num_positive_increments = (joint_max_vector_[free_params_[0]]-initial_guess)/redundant_joint_discretization_.at(free_params_[0]);
+    num_negative_increments = (initial_guess-joint_min_vector_[free_params_[0]])/redundant_joint_discretization_.at(free_params_[0]);
   }
 
   // -------------------------------------------------------------------------------------------------
@@ -1015,7 +1023,8 @@ bool IKFastKinematicsPlugin::getPositionIK(const geometry_msgs::Pose &ik_pose,
   }
 
   KDL::Frame frame;
-  tf::poseMsgToKDL(ik_pose,frame);
+  //tf::poseMsgToKDL(ik_pose,frame);
+  tf2::fromMsg(ik_pose, frame);
 
   IkSolutionList<IkReal> solutions;
   int numsol = solve(frame,vfree,solutions);
@@ -1097,7 +1106,8 @@ bool IKFastKinematicsPlugin::getPositionIK(const std::vector<geometry_msgs::Pose
   }
 
   KDL::Frame frame;
-  tf::poseMsgToKDL(ik_poses[0],frame);
+  //tf::poseMsgToKDL(ik_poses[0],frame);
+  tf2::fromMsg(ik_poses[0], frame);
 
   // solving ik
   std::vector< IkSolutionList<IkReal> > solution_set;
