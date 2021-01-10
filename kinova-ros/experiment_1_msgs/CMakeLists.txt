@@ -54,6 +54,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
    FILES
    Position.msg
+   List_2.msg
+   List_1.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -63,6 +65,8 @@ add_service_files(
    NamedTargetArm.srv
    NamedTargetGripper.srv
    PickPlace.srv
+   PosBoard.srv
+   PosPiece.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -112,7 +116,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES experiment_1_msgs
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  CATKIN_DEPENDS roscpp rospy std_msgs 
 #  DEPENDS system_lib
 )
 

@@ -50,4 +50,4 @@ if __name__ == '__main__':
 
         rospy.spin()
     except rospy.ROSInterruptException:
-      print "program ini_group interrupted before completion"
+      print "program init_group interrupted before completion"
