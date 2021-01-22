@@ -1,0 +1,27 @@
+<launch>
+  <!-- for saved sessions on experiment_1 in directory sessions-->
+  <arg name="camera_rgb_topic" default="/camera/color/image_raw"/>
+  <arg name="gui_value" default="false"/>
+  <arg name="session" default="$(find experiment_1)/sessions/board_session.bin"/>
+
+  <!-- nodes -->
+  <node name="find_object_2d" pkg="find_object_2d" type="find_object_2d" output="screen">
+    <remap from="image" to="$(arg camera_rgb_topic)"/>
+    <param name="gui" value="$(arg gui_value)" type="bool"/>
+    <param name="session_path" value="$(arg session)" type="str"/>
+  </node>
+
+  <node name="find_object_3d" pkg="find_object_2d" type="find_object_2d" output="screen">
+    <param name="gui" value="$(arg gui_value)" type="bool"/>
+    <param name="subscribe_depth" value="true" type="bool"/>
+    <param name="session_path" value="$(arg session)" type="str"/>
+    <param name="objects_path" value="" type="str"/>
+    <param name="object_prefix" value="object" type="str"/>
+    <remap from="rgb/image_rect_color" to="$(arg camera_rgb_topic)"/>
+    <remap from="depth_registered/image_raw" to="/camera/depth/image_raw"/>
+    <remap from="depth_registered/camera_info" to="/camera/depth/camera_info"/>
+  </node>
+
+  <!-- image detection -->
+  <node name="env_detect" pkg="experiment_1" type="positions_objects_pub.py"/>
+</launch>

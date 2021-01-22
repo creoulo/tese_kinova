@@ -83,7 +83,7 @@
         <kinematic>0</kinematic>
       </link>
     </model>
-    
+
     #<joint name="camera_optical_joint" type="fixed">
     #  <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
     #  <parent link="camera_link"/>
@@ -270,8 +270,8 @@
       <pose frame=''>0 -0.40 0 0 -0 0</pose>
     </model>
 
-    <model name='blue_cylinder'>
-      <link name='blue_cylinder_link'>
+    <model name='blue_cylinder_short'>
+      <link name='blue_cylinder_short_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -293,7 +293,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -320,7 +320,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -375,8 +375,8 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='blue_cylinder_0'>
-      <link name='blue_cylinder_link'>
+    <model name='blue_cylinder_short_0'>
+      <link name='blue_cylinder_short_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -398,7 +398,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -425,7 +425,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -480,8 +480,8 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='blue_cylinder_1'>
-      <link name='blue_cylinder_link'>
+    <model name='blue_cylinder_short_1'>
+      <link name='blue_cylinder_short_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -503,7 +503,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -530,7 +530,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -585,8 +585,8 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='blue_cylinder_2'>
-      <link name='blue_cylinder_link'>
+    <model name='blue_cylinder_short_2'>
+      <link name='blue_cylinder_short_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -608,7 +608,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -635,7 +635,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -690,8 +690,8 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='blue_cylinder_3'>
-      <link name='blue_cylinder_link'>
+    <model name='blue_cylinder_short_3'>
+      <link name='blue_cylinder_short_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -713,7 +713,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -740,7 +740,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>

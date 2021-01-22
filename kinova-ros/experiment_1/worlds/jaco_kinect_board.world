@@ -1,5 +1,18 @@
 <sdf version='1.6'>
   <world name='default'>
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose frame=''>0 0 10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
     <model name='ground_plane'>
       <static>1</static>
       <link name='link'>
@@ -48,26 +61,6 @@
         <kinematic>0</kinematic>
       </link>
     </model>
-    <light name='sun' type='directional'>
-      <cast_shadows>1</cast_shadows>
-      <pose frame=''>0 0 10 0 -0 0</pose>
-      <diffuse>0.8 0.8 0.8 1</diffuse>
-      <specular>0.2 0.2 0.2 1</specular>
-      <attenuation>
-        <range>1000</range>
-        <constant>0.9</constant>
-        <linear>0.01</linear>
-        <quadratic>0.001</quadratic>
-      </attenuation>
-      <direction>-0.5 0.1 -0.9</direction>
-    </light>
-    <gui fullscreen='0'>
-      <camera name='user_camera'>
-        <pose frame=''>6.84366 -6.15998 3.8555 0 0.275643 2.35619</pose>
-        <view_controller>orbit</view_controller>
-        <projection_type>perspective</projection_type>
-      </camera>
-    </gui>
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
     <atmosphere type='adiabatic'/>
@@ -89,14 +82,13 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
-  <joint name="camera_optical_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
-    <parent link="camera_link"/>
-    <child link="camera_link_optical"/>
-  </joint>
-
-  <link name="camera_link_optical">
-  </link>
+    <joint name="camera_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+      <parent link="camera_link"/>
+      <child link="camera_link_optical"/>
+    </joint>
+    <link name="camera_link_optical">
+    </link>
     <model name='kinect_ros'>
       <link name='camera_link'>
         <inertial>
@@ -225,13 +217,13 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.04027 -1.24024 0 0 -0 0</pose>
+      <pose frame=''>0.006735 -0.962121 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>47 133000000</sim_time>
-      <real_time>47 374926390</real_time>
-      <wall_time>1573555907 922391053</wall_time>
-      <iterations>47133</iterations>
+      <sim_time>86 164000000</sim_time>
+      <real_time>86 519227881</real_time>
+      <wall_time>1610717776 178386533</wall_time>
+      <iterations>86164</iterations>
       <model name='ground_plane'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
@@ -243,10 +235,20 @@
         </link>
       </model>
       <model name='kinect_ros'>
-        <pose frame=''>-0.04027 -1.24024 0.686435 -0 0.40621 1.56639</pose>
+        <pose frame=''>0.006735 -0.962121 0.5 0 1 1.58</pose>
         <scale>1 1 1</scale>
         <link name='kinect_link'>
-          <pose frame=''>-0.04027 -1.24024 0.686435 -0 0.40621 1.56639</pose>
+          <pose frame=''>0.006735 -0.962121 0.5 0 1 1.58</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='tic_tac_toe_board'>
+        <pose frame=''>0 -0.4 0 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose frame=''>0 -0.4 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
@@ -256,5 +258,58 @@
         <pose frame=''>0 0 10 0 -0 0</pose>
       </light>
     </state>
+    <model name='tic_tac_toe_board'>
+      <link name='link'>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <gravity>1</gravity>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>0.3 0.3 0.0001</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://tic_tac_toe_board/materials/scripts</uri>
+              <uri>model://tic_tac_toe_board/materials/textures</uri>
+              <name>Grid33</name>
+            </script>
+          </material>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.3 0.3 0.0003</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+      </link>
+      <static>1</static>
+      <allow_auto_disable>1</allow_auto_disable>
+      <pose frame=''>-0.040558 -0.516274 0 0 -0 0</pose>
+    </model>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose frame=''>0.814111 0.225599 2.22957 0 0.951643 -2.58299</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
   </world>
 </sdf>

@@ -54,8 +54,11 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
    FILES
    Position.msg
-   List_2.msg
-   List_1.msg
+   List2.msg
+   List1.msg
+   InfoBoard.msg
+   InfoPieces.msg
+   Coordinates.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -116,7 +119,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES experiment_1_msgs
-#  CATKIN_DEPENDS roscpp rospy std_msgs 
+#  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
