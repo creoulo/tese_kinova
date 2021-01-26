@@ -1,6 +1,6 @@
 <launch>
   <arg name="kinova_robotType" default="j2n6s300"/>
-  <arg name="world_name" default="$(find experiment_1)/worlds/jaco_tic_tac_toe_kinect_short.world"/>
+  <arg name="world_name" default="$(find experiment_1)/worlds/jaco_tic_tac_toe_kinect.world"/>
   <arg name="debug" default="false"/>
   <arg name="verbose" default="false"/>
 
@@ -17,4 +17,5 @@
   <!-- Static transform that connects a publisher topic to a node  x y z (yaw pitch roll)/quaternion frame_id child_frame_id  period (milliseconds)-->
   <node name="static_tf_kinect" pkg="tf" type="static_transform_publisher" args="0 -0.8 0.8 1.58 0.5 0 world camera_link 100"/>
 
+  <node type="rviz" name="rviz" pkg="rviz" />
 </launch>

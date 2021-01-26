@@ -1,2 +1,1 @@
-experiment_1_msgs/List2 poses1
-experiment_1_msgs/List2 poses2
+experiment_1_msgs/List2 poses

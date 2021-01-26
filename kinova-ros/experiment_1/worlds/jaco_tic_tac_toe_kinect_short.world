@@ -795,7 +795,7 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='red_cylinder'>
+    <model name='red_cylinder_short'>
       <link name='link'>
         <inertial>
           <mass>1</mass>
@@ -818,7 +818,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -845,7 +845,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -900,7 +900,7 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='red_cylinder_0'>
+    <model name='red_cylinder_short_0'>
       <link name='link'>
         <inertial>
           <mass>1</mass>
@@ -923,7 +923,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -950,7 +950,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -1005,7 +1005,7 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='red_cylinder_1'>
+    <model name='red_cylinder_short_1'>
       <link name='link'>
         <inertial>
           <mass>1</mass>
@@ -1028,7 +1028,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -1055,7 +1055,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -1110,7 +1110,7 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='red_cylinder_2'>
+    <model name='red_cylinder_short_2'>
       <link name='link'>
         <inertial>
           <mass>1</mass>
@@ -1133,7 +1133,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -1160,7 +1160,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>
@@ -1215,7 +1215,7 @@
       <pose frame=''>0 0 0 0 0 0</pose>
     </model>
 
-    <model name='red_cylinder_3'>
+    <model name='red_cylinder_short_3'>
       <link name='link'>
         <inertial>
           <mass>1</mass>
@@ -1238,7 +1238,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <material>
@@ -1265,7 +1265,7 @@
           <geometry>
             <cylinder>
               <radius>0.025</radius>
-              <length>0.15</length>
+              <length>0.05</length>
             </cylinder>
           </geometry>
           <surface>

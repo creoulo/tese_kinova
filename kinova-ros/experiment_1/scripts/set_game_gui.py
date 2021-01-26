@@ -102,27 +102,27 @@ def pos_piece_handler( req):
     #gets the initial position of the pieces relative to the world and stores them in vectors
     #Red
     pose = (0.4, -0.04)
-    poses_red.data.append(List_1(data = pose))
+    poses_red.data.append(List1(data = pose))
     pose = (0.4, -0.14)
-    poses_red.data.append(List_1(data = pose))
+    poses_red.data.append(List1(data = pose))
     pose = (0.4, -0.24)
-    poses_red.data.append(List_1(data = pose))
+    poses_red.data.append(List1(data = pose))
     pose = (0.4, -0.34)
-    poses_red.data.append(List_1(data = pose))
+    poses_red.data.append(List1(data = pose))
     pose = (0.4, -0.44)
-    poses_red.data.append(List_1(data = pose))
+    poses_red.data.append(List1(data = pose))
 
     #Blue
     pose = (-0.4, -0.04)
-    poses_blue.data.append(List_1(data = pose))
+    poses_blue.data.append(List1(data = pose))
     pose = (-0.4, -0.14)
-    poses_blue.data.append(List_1(data = pose))
+    poses_blue.data.append(List1(data = pose))
     pose = (-0.4, -0.24)
-    poses_blue.data.append(List_1(data = pose))
+    poses_blue.data.append(List1(data = pose))
     pose = (-0.4, -0.34)
-    poses_blue.data.append(List_1(data = pose))
+    poses_blue.data.append(List1(data = pose))
     pose = (-0.4, -0.44)
-    poses_blue.data.append(List_1(data = pose))
+    poses_blue.data.append(List1(data = pose))
 
     return PosPieceResponse(poses_red, poses_blue)
 
