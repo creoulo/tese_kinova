@@ -1,0 +1,51 @@
+<launch>
+  <!-- for saved sessions on experiment_1 in directory sessions-->
+  <arg name="camera_rgb_topic" default="/camera/color/image_raw"/>
+  <arg name="gui_value" default="false"/>
+  <arg name="session" default="$(find experiment_1)/sessions/board_session.bin"/>
+
+  <!-- nodes -->
+  <node name="find_object_2d" pkg="find_object_2d" type="find_object_2d" output="screen">
+    <remap from="image" to="$(arg camera_rgb_topic)"/>
+    <param name="gui" value="$(arg gui_value)" type="bool"/>
+    <param name="session_path" value="$(arg session)" type="str"/>
+  </node>
+
+  <node name="find_object_3d" pkg="find_object_2d" type="find_object_2d" output="screen">
+    <param name="gui" value="$(arg gui_value)" type="bool"/>
+    <param name="subscribe_depth" value="true" type="bool"/>
+    <param name="session_path" value="$(arg session)" type="str"/>
+    <param name="objects_path" value="" type="str"/>
+    <param name="object_prefix" value="object" type="str"/>
+    <remap from="rgb/image_rect_color" to="$(arg camera_rgb_topic)"/>
+    <remap from="depth_registered/image_raw" to="/camera/depth/image_raw"/>
+    <remap from="depth_registered/camera_info" to="/camera/depth/camera_info"/>
+  </node>
+
+  <!-- publication of position of every square -->
+  <node name="env_detect" pkg="experiment_1" type="positions_objects_pub.py"/>
+
+  <node name="processing_node" pkg="experiment_1" type="filtering_and_segmentation">
+    <rosparam>
+      cloud_topic: "/camera/depth/points"
+      frame_id: "/camera_link_optical"
+      voxel_leaf_size: 0.03 <!-- mm -->
+      x_filter_min: -2.5 <!-- m -->
+      x_filter_max: 2.5 <!-- m -->
+      y_filter_min: -2.5 <!-- m -->
+      y_filter_max: 2.5 <!-- m -->
+      z_filter_min: -2.5 <!-- m -->
+      z_filter_max: 2.5 <!-- m -->
+      r_max: 255
+      r_min: 100
+      g_max: 255
+      g_min: 100
+      b_max: 255
+      b_min: 0
+      cluster_tolerance: 0.03 <!-- m -->
+      min_cluster_size: 10
+      max_cluster_size: 50
+    </rosparam>
+  </node>
+
+</launch>

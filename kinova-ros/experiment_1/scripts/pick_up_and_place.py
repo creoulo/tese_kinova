@@ -197,7 +197,7 @@ if __name__ == '__main__':
     moveFingers([GRIPPER_OPEN, GRIPPER_OPEN, GRIPPER_OPEN])
 
     pick_over_pose = copy.deepcopy(pick_pose)
-    pick_over_pose.position.z = 0.35
+    pick_over_pose.position.z = 0.11#2 * pick_over_pose.position.z
     rospy.loginfo("Going to pose over piece")
     move_group_arm.set_pose_target(pick_over_pose)
     move_group_arm.go(wait=True)
@@ -222,7 +222,7 @@ if __name__ == '__main__':
     #3 - downward movement in place position
     #4 - open gripper
     waypoints = []
-    pick_over_pose.position.z = 0.35
+    pick_over_pose.position.z = 0.11#2 * pick_over_pose.position.z
     waypoints.append(pick_over_pose)
     resp_path = req_path(waypoints)
     while resp_path.quality < 0.8:
@@ -233,7 +233,7 @@ if __name__ == '__main__':
         moveJoint(jointcmds)
 
     place_over_pose = copy.deepcopy(place_pose)
-    place_over_pose.position.z = 0.35
+    place_over_pose.position.z = 0.11#2 * place_over_pose.position.z
     rospy.loginfo("Going to place the piece on board")
     move_group_arm.set_pose_target(place_over_pose)
     move_group_arm.go(wait=True)
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     moveFingers([GRIPPER_OPEN, GRIPPER_OPEN, GRIPPER_OPEN])
 
     #HOME-----------------------------------------------------------------------
-    #1 - upward movement to place pose with z = 0.2
+    #1 - upward movement to place pose with z = 0.02
     #2 - arm to home
     waypoints = []
     waypoints.append(place_over_pose)

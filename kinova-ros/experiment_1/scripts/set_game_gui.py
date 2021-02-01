@@ -24,16 +24,20 @@ from experiment_1_msgs.srv import *
 from experiment_1_msgs.msg import *
 
 
+global poses_red
 poses_red = List_2()
+global poses_blue
 poses_blue = List_2()
-#red_model_name = ['red_cylinder','red_cylinder_clone', 'red_cylinder_clone_0', 'red_cylinder_clone_1', 'red_cylinder_clone_1_clone']#for jaco tic_tac_toe
-#blue_model_name = ['blue_cylinder','blue_cylinder_clone', 'blue_cylinder_clone_clone', 'blue_cylinder_clone_clone_0', 'blue_cylinder_clone_clone_1']#for jaco tic_tac_toe
-red_model_name = ['red_cylinder','red_cylinder_0', 'red_cylinder_1', 'red_cylinder_2', 'red_cylinder_3']#for jaco tic_tac_toe_kinect
-blue_model_name = ['blue_cylinder','blue_cylinder_0', 'blue_cylinder_1', 'blue_cylinder_2', 'blue_cylinder_3']#for jaco tic_tac_toe_kinect
+#red_model_name = ['red_cylinder','red_cylinder_0', 'red_cylinder_1', 'red_cylinder_2', 'red_cylinder_3']#for jaco tic_tac_toe_kinect
+#blue_model_name = ['blue_cylinder','blue_cylinder_0', 'blue_cylinder_1', 'blue_cylinder_2', 'blue_cylinder_3']#for jaco tic_tac_toe_kinect
+red_model_name = ['red_cylinder_short','red_cylinder_short_0', 'red_cylinder_short_1', 'red_cylinder_short_2', 'red_cylinder_short_3']#for jaco tic_tac_toe_kinect_short
+blue_model_name = ['blue_cylinder_short','blue_cylinder_short_0', 'blue_cylinder_short_1', 'blue_cylinder_short_2', 'blue_cylinder_short_3']#for jaco tic_tac_toe_kinect_short
 game_state = ["","","","","","","","",""]
-h = str(0.11) #height of the pieces needed to obtain the moves for the robot
+h = str(0.02) #height of the pieces needed to obtain the moves for the robot
 win = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(1,5,8),(0,4,8),(2,4,6)]
 global r, c
+global board_coordinates
+global pieces_coordinates
 
 main = tk.Tk()
 main.title('Tic-Tac-Toe')
@@ -51,56 +55,56 @@ def initServices():
 def pos_board_handler( req):
     # given the row and collumn returns the position of the board relative to
     # the world and the position of the array for the game state
-    #create listener to listen to topic /board_position
-    #with the coordinates of the center of the board we get the values of each
-    # square center (increments of 0.1)
+    global board_coordinates
     x = 0
     y = 0
     pos_update = 9
     if req.r == 1:
         if req.c == 1:
-            #x = 0.098700
-            #y = -0.498752
+            x = board_coordinates[0].x
+            y = board_coordinates[0].y
             pos_update = 0
         elif req.c == 2:
-            #x = -0.005644
-            #y = -0.498752
+            x = board_coordinates[1].x
+            y = board_coordinates[1].y
             pos_update = 1
         elif req.c == 3:
-            #x = -0.105557
-            #y = -0.498752
+            x = board_coordinates[2].x
+            y = board_coordinates[2].y
             pos_update = 2
     elif req.r == 2:
         if req.c == 1:
-            #x = 0.098700
-            #y = -0.406524
+            x = board_coordinates[3].x
+            y = board_coordinates[3].y
             pos_update = 3
         elif req.c == 2:
-            #x = -0.005644
-            #y = -0.406524
+            x = board_coordinates[4].x
+            y = board_coordinates[4].y
             pos_update = 4
         elif req.c == 3:
-            #x = -0.105557
-            #y = -0.406524
+            x = board_coordinates[5].x
+            y = board_coordinates[5].y
             pos_update = 5
     elif req.r == 3:
         if req.c == 1:
-            #x = 0.098700
-            #y = -0.308745
+            x = board_coordinates[6].x
+            y = board_coordinates[6].y
             pos_update = 6
         elif req.c == 2:
-            #x = -0.005644
-            #y = -0.308745
+            x = board_coordinates[7].x
+            y = board_coordinates[7].y
             pos_update = 7
         elif req.c == 3:
-            #x = -0.105557
-            #y = -0.308745
+            x = board_coordinates[8].x
+            y = board_coordinates[8].y
             pos_update = 8
     return PosBoardResponse(x, y, pos_update)
 
 def pos_piece_handler( req):
     #gets the initial position of the pieces relative to the world and stores them in vectors
-    #Red
+    global poses_red, poses_blue
+
+    #Red - at this moment this pieces are not being detected since we only have simulation
     pose = (0.4, -0.04)
     poses_red.data.append(List1(data = pose))
     pose = (0.4, -0.14)
@@ -113,6 +117,7 @@ def pos_piece_handler( req):
     poses_red.data.append(List1(data = pose))
 
     #Blue
+    '''
     pose = (-0.4, -0.04)
     poses_blue.data.append(List1(data = pose))
     pose = (-0.4, -0.14)
@@ -123,11 +128,24 @@ def pos_piece_handler( req):
     poses_blue.data.append(List1(data = pose))
     pose = (-0.4, -0.44)
     poses_blue.data.append(List1(data = pose))
+    '''
+    #global pieces_coordinates
+    poses_blue = pieces_coordinates.poses
+
+    #print "service red: ", poses_red
+    #print "service blue: ", poses_blue
 
     return PosPieceResponse(poses_red, poses_blue)
 
-def callback_board(msg):
-    board_coordinates = msg
+def boardCallback(msg):
+    global board_coordinates
+    board_coordinates = msg.coord
+    #print board_coordinates
+
+def piecesCallback(msg):
+    global pieces_coordinates
+    pieces_coordinates = msg.poses
+    print pieces_coordinates
 
 def validateMove( r, c):
     resp =  getPosBoard(r,c)# visualize in gazebo
@@ -174,15 +192,15 @@ def moveInGazebo( x, y, color):
     state_msg.reference_frame = 'world'
     state_msg.pose.position.x = x
     state_msg.pose.position.y = y
-    state_msg.pose.position.z = 0.20
-    q = quaternion_from_euler(0, -pi, 0)
-    state_msg.pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
+    state_msg.pose.position.z = 0.6#float(h) #default value related to the height of the piece
+    #q = quaternion_from_euler(0, -pi, 0)
+    #state_msg.pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
 
     rospy.wait_for_service('/gazebo/set_model_state')
     try:
         set_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
         resp = set_state(state_msg)
-
+        assert resp.success is True
     except rospy.ServiceException, e:
         print "Service call failed: %s" % e
 
@@ -314,15 +332,21 @@ def b_click( b, r, c):
         update_board = resp.pos_update
         moveInGazebo(rx, ry, "red")
         gameStateUpdate(update_board, "red")
-        #main.update()
+        #print "Poses_red : ", poses_red.data
+        poses_red.data.pop(0)
+        #print "Red move: ", resp
+        main.update()
 
         #robot plays next if human did not won
         if endGame() == "NOTHING":
-            #pick vars
-            q = poses_blue.data.pop(0)
-            q = list(q.data)
-            x = str(q.pop(0))
-            y = str(q.pop(0))
+            #get initial position of the piece
+            q = poses_blue.data
+            #print "Position of the piece: ", q[0].data[0]
+            x = str(q[0].data[0])
+            y = str(q[0].data[1])
+            poses_blue.data.pop(0)
+            #print "X : ", x, "Y :", y
+
             #place vars
             max_value, r, c = maximization(level, -2, 2)
             resp = getPosBoard(r, c) # visualize in gazebo
@@ -333,12 +357,16 @@ def b_click( b, r, c):
             #show where robot plays on grid
             b_b = get_button(r, c) #returns string with button
             b_b["text"] = "BLUE"
-            #moveInGazebo(rx, ry, "blue") #move directly in gazeb without the arm
+
+            moveInGazebo(rx, ry, "blue") #move directly in gazeb without the arm
+            print "Blue move: ", resp
+            '''
             rx = str(rx)
             ry = str(ry)
             #execute pick and place
             cmd = 'rosrun experiment_1 pick_up_and_place.py ' + x + ' ' + y + ' ' + h + ' ' + rx + ' ' + ry + ' ' + h
             os.system(cmd)
+            '''
 
     elif b["text"] != " " and endGame() == "NOTHING":
         messagebox.showerror("Tic-Tac-Toe", "Position already occupied")
@@ -351,8 +379,10 @@ def b_click( b, r, c):
         else:
             messagebox.showinfo("Tic-Tac-Toe", "It's a TIE")
 
-        red_model_name = ['red_cylinder','red_cylinder_0', 'red_cylinder_1', 'red_cylinder_2', 'red_cylinder_3']#for jaco tic_tac_toe_kinect
-        blue_model_name = ['blue_cylinder','blue_cylinder_0', 'blue_cylinder_1', 'blue_cylinder_2', 'blue_cylinder_3']#for jaco tic_tac_toe_kinect
+        #red_model_name = ['red_cylinder','red_cylinder_0', 'red_cylinder_1', 'red_cylinder_2', 'red_cylinder_3']#for jaco tic_tac_toe_kinect
+        #blue_model_name = ['blue_cylinder','blue_cylinder_0', 'blue_cylinder_1', 'blue_cylinder_2', 'blue_cylinder_3']#for jaco tic_tac_toe_kinect
+        red_model_name = ['red_cylinder_short','red_cylinder_short_0', 'red_cylinder_short_1', 'red_cylinder_short_2', 'red_cylinder_short_3']#for jaco tic_tac_toe_kinect_short
+        blue_model_name = ['blue_cylinder_short','blue_cylinder_short_0', 'blue_cylinder_short_1', 'blue_cylinder_short_2', 'blue_cylinder_short_3']#for jaco tic_tac_toe_kinect_short
         game_state = ["","","","","","","","",""]
         disable_all_buttons()
         #reset simulation
@@ -406,10 +436,15 @@ if __name__ == '__main__':
     initServices()
     getPosBoard = rospy.ServiceProxy('/experiment_1_msgs/PosBoard', experiment_1_msgs.srv.PosBoard )
     getPieces = rospy.ServiceProxy('/experiment_1_msgs/PosPiece', experiment_1_msgs.srv.PosPiece)
-    rospy.Subscriber("board_position", InfoBoard, callback_board)
+
     #Initialization------------------------------------------------------------
     #Define initial poses of pieces to be picked up by robot
-    pieces = getPieces()
+
+    global pieces_coordinates, board_coordinates
+    board_coordinates = rospy.wait_for_message('/processing_node/board_positions', InfoBoard)
+    board_coordinates = board_coordinates.coord
+    pieces_coordinates = rospy.wait_for_message('/processing_node/pieces_positions', InfoPieces)
+    getPieces()
 
     #Gameplay-----------------------------------------------------------------
     #end_game = endGame()

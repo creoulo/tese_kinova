@@ -83,7 +83,7 @@
         <kinematic>0</kinematic>
       </link>
     </model>
-    
+
     #<joint name="camera_optical_joint" type="fixed">
     #  <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
     #  <parent link="camera_link"/>
@@ -287,7 +287,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>-0.4 -0.04 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -372,7 +371,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>-0.4 -0.04 0 0 -0 0</pose>
     </model>
 
     <model name='blue_cylinder_0'>
@@ -392,7 +391,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>-0.4 -0.14 0 0 0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -477,7 +475,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>-0.4 -0.14 0 0 0 0</pose>
     </model>
 
     <model name='blue_cylinder_1'>
@@ -497,7 +495,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>-0.4 -0.24 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -582,7 +579,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>-0.4 -0.24 0 0 -0 0</pose>
     </model>
 
     <model name='blue_cylinder_2'>
@@ -602,7 +599,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>-0.4 -0.34 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -687,7 +683,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>-0.4 -0.34 0 0 -0 0</pose>
     </model>
 
     <model name='blue_cylinder_3'>
@@ -707,7 +703,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>-0.4 -0.44 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -792,7 +787,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>-0.4 -0.44 0 0 -0 0</pose>
     </model>
 
     <model name='red_cylinder'>
@@ -812,7 +807,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0.4 -0.04 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -897,7 +891,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>0.4 -0.04 0 0 -0 0</pose>
     </model>
 
     <model name='red_cylinder_0'>
@@ -917,7 +911,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0.4 -0.14 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -1002,7 +995,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>0.4 -0.14 0 0 -0 0</pose>
     </model>
 
     <model name='red_cylinder_1'>
@@ -1022,7 +1015,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0.4 -0.24 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -1107,7 +1099,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>0.4 -0.24 0 0 -0 0</pose>
     </model>
 
     <model name='red_cylinder_2'>
@@ -1127,7 +1119,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0.4 -0.34 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -1212,7 +1203,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>0.4 -0.34 0 0 -0 0</pose>
     </model>
 
     <model name='red_cylinder_3'>
@@ -1232,7 +1223,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0.4 -0.44 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -1317,7 +1307,7 @@
       </link>
       <static>0</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0 0 0 0 0</pose>
+      <pose frame=''>0.4 -0.44 0 0 -0 0</pose>
     </model>
 
 

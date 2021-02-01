@@ -3,7 +3,7 @@
     <rosparam>
       cloud_topic: "/camera/depth/points"
       frame_id: "/camera_link_optical"
-      voxel_leaf_size: 0.03 <!-- mm -->
+      voxel_leaf_size: 0.02 <!-- mm -->
       x_filter_min: -2.5 <!-- m -->
       x_filter_max: 2.5 <!-- m -->
       y_filter_min: -2.5 <!-- m -->
@@ -11,14 +11,22 @@
       z_filter_min: -2.5 <!-- m -->
       z_filter_max: 2.5 <!-- m -->
       r_max: 255
-      r_min: 100
+      r_min: 120
       g_max: 255
-      g_min: 100
+      g_min: 110
       b_max: 255
       b_min: 0
-      cluster_tolerance: 0.03 <!-- m -->
-      min_cluster_size: 10
-      max_cluster_size: 50
+      r_max_b: 255
+      r_min_b: 110
+      g_max_b: 255
+      g_min_b: 120
+      b_max_b: 255
+      b_min_b: 120
+      cluster_tolerance: 0.02 <!-- m -->
+      min_cluster_size: 5
+      max_cluster_size: 5000
+      radius_search: 0.02
+      k_nearest_neighbors: 15
     </rosparam>
   </node>
 </launch>

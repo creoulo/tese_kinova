@@ -22,6 +22,7 @@
     <remap from="depth_registered/camera_info" to="/camera/depth/camera_info"/>
   </node>
 
-  <!-- image detection -->
-  <node name="env_detect" pkg="experiment_1" type="positions_objects_pub.py"/>
+  <!-- publication of position of every square -->
+  <!--<node name="env_detect" pkg="experiment_1" type="positions_objects_pub.py"/>-->
+
 </launch>

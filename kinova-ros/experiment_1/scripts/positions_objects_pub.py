@@ -13,9 +13,19 @@ def get_board_coord():
     coords = InfoBoard()
     listener = tf.TransformListener()
     for object in objects:
-        listener.waitForTransform("/world", object, rospy.Time(), rospy.Duration(4.0))
+        listener.waitForTransform("/world", object, rospy.Time(0), rospy.Duration(4.0))
         (trans, rot) = listener.lookupTransform('world', object, rospy.Time())
-        coords.coord.append(Coordinates(x = trans[0], y = trans[1]))
+        #coords.coord.append(Coordinates(x = trans[0], y = trans[1]))
+        x = trans[0]
+        y = trans[1]
+    print "Middle square at: ", x, y
+    w = 0.1
+    square_matrix = [Coordinates(x = x+w, y = y-w),Coordinates(x = x, y = y-w),Coordinates(x = x-w, y = y-w),
+                     Coordinates(x = x+w, y = y),Coordinates(x = x, y = y),Coordinates(x = x-w, y = y),
+                     Coordinates(x = x+w, y = y+w),Coordinates(x = x, y = y+w),Coordinates(x = x-w, y = y+w)]
+
+    coords.coord = square_matrix
+    print "Coordinates:", coords
     return coords
 
 def callback_board(msg):
@@ -26,15 +36,12 @@ if __name__ == '__main__':
     try:
         coordinates_board = InfoBoard()
         rospy.init_node('positions_info')
-        pub1 = rospy.Publisher('board_position', InfoBoard, queue_size=100)#queue_size equal to the rate as the message is going
-        rate = rospy.Rate(100)#Hz
+        pub1 = rospy.Publisher('board_position', InfoBoard, queue_size=1)#queue_size equal to the rate as the message is going
+        rate = rospy.Rate(1)#Hz
         info_board = get_board_coord()
 
         while not rospy.is_shutdown():
             pub1.publish(info_board)
-            print "pub:", info_board
-            rospy.Subscriber("board_position", InfoBoard, callback_board)
-            print "\nsub1: ", coordinates_board
 
     except rospy.ROSInterruptException:
         print "program interrupted before completion"

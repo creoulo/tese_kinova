@@ -89,15 +89,13 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
-  <joint name="camera_optical_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
-    <parent link="camera_link"/>
-    <child link="camera_link_optical"/>
-  </joint>
+
+
 
   <link name="camera_link_optical">
   </link>
     <model name='kinect_ros'>
+    <pose frame=''>-0.04027 -1.24024 0.1 1.56639 0 1.56639</pose>
       <link name='camera_link'>
         <inertial>
           <mass>0.1</mass>
@@ -153,7 +151,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
         <visual name='visual'>
           <geometry>
             <mesh>
@@ -225,7 +222,6 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.04027 -1.24024 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
       <sim_time>47 133000000</sim_time>
@@ -237,16 +233,6 @@
         <scale>1 1 1</scale>
         <link name='link'>
           <pose frame=''>0 0 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='kinect_ros'>
-        <pose frame=''>-0.04027 -1.24024 0.686435 -0 0.40621 1.56639</pose>
-        <scale>1 1 1</scale>
-        <link name='kinect_link'>
-          <pose frame=''>-0.04027 -1.24024 0.686435 -0 0.40621 1.56639</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
