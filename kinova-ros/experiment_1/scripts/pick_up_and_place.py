@@ -178,10 +178,12 @@ if __name__ == '__main__':
     move_group_arm = MoveGroupCommander(group_arm) #this interface can be used to plan and execute motions
     move_group_arm.set_planner_id("RRTConnectkConfigDefault")#planner
     move_group_arm.allow_replanning(True) #Moveit! will try up to five different plans to move the end_effector to the desired pose
+    #move_group_arm.set_max_velocity_scaling_factor(1)#allowed values between 0 and 1
 
     #gripper
     group_gripper = "gripper"
     move_group_gripper = MoveGroupCommander(group_gripper)
+    #move_group_gripper.set_max_velocity_scaling_factor(1)#allowed values between 0 and 1
 
     initServices(move_group_arm, move_group_gripper)
 
@@ -191,13 +193,13 @@ if __name__ == '__main__':
 
     #PICK-----------------------------------------------------------------------
     #1 - open gripper
-    #2 - move to pick pose with z = z + 0.2
+    #2 - move to pick over pose with z = z + 0.2
     #3 - downward movement to pick position
     #4 - close gripper
     moveFingers([GRIPPER_OPEN, GRIPPER_OPEN, GRIPPER_OPEN])
 
     pick_over_pose = copy.deepcopy(pick_pose)
-    pick_over_pose.position.z = 0.11#2 * pick_over_pose.position.z
+    pick_over_pose.position.z = 3 * pick_pose.position.z
     rospy.loginfo("Going to pose over piece")
     move_group_arm.set_pose_target(pick_over_pose)
     move_group_arm.go(wait=True)
@@ -214,6 +216,7 @@ if __name__ == '__main__':
         jointcmds = resp_path.path.joint_trajectory.points[i].positions
         moveJoint(jointcmds)
 
+    rospy.loginfo("Grabbing piece")
     moveFingers([GRIPPER_CLOSE, GRIPPER_CLOSE, GRIPPER_CLOSE])
 
     #PLACE----------------------------------------------------------------------
@@ -221,8 +224,9 @@ if __name__ == '__main__':
     #2 - move to place pose with z = z + 0.2
     #3 - downward movement in place position
     #4 - open gripper
+    rospy.loginfo("Going to pose over piece")
     waypoints = []
-    pick_over_pose.position.z = 0.11#2 * pick_over_pose.position.z
+    #pick_over_pose.position.z = 2 * pick_pose.position.z
     waypoints.append(pick_over_pose)
     resp_path = req_path(waypoints)
     while resp_path.quality < 0.8:
@@ -233,7 +237,7 @@ if __name__ == '__main__':
         moveJoint(jointcmds)
 
     place_over_pose = copy.deepcopy(place_pose)
-    place_over_pose.position.z = 0.11#2 * place_over_pose.position.z
+    place_over_pose.position.z = 3 * place_pose.position.z
     rospy.loginfo("Going to place the piece on board")
     move_group_arm.set_pose_target(place_over_pose)
     move_group_arm.go(wait=True)

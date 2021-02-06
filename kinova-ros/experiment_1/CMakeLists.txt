@@ -20,10 +20,13 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_msgs
   PCL
   experiment_1_msgs
+  cv_bridge
+  image_geometry
 )
 
+
 ## System dependencies are found with CMake's conventions
-#find_package(Boost REQUIRED COMPONENTS system)
+find_package(OpenCV)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -129,6 +132,8 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
+  ${OpenCV2_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -161,6 +166,8 @@ add_executable(filtering_and_segmentation scripts/filtering_and_segmentation.cpp
 target_link_libraries(filtering_and_segmentation
    ${catkin_LIBRARIES}
    ${PCL_LIBRARIES}
+   ${OpenCV_LIBRARIES}
+   ${OpenCV2_LIBRARIES}
  )
 
 #############

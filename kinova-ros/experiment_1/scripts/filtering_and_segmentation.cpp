@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/PointCloud.h>
+#include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/image_encodings.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
@@ -23,8 +24,11 @@
 #include <experiment_1_msgs/InfoBoard.h>
 #include <tf/transform_listener.h>
 #include <tf/transform_datatypes.h>
-
-ros::Publisher pub, pub1, pub2, pub3;
+#include <cv_bridge/cv_bridge.h>
+#include <message_filters/subscriber.h>
+#include <message_filters/time_synchronizer.h>
+#include <image_geometry/pinhole_camera_model.h>
+ros::Publisher pub, pub1, pub2, pub3, pub4, pub5;
 
 ros::Publisher clust1, clust2, clust3, clust4, clust5;
 
@@ -201,6 +205,7 @@ void planeCallback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
 void cylinderCallback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
+
     ros::NodeHandle nh("processing_node");
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::fromROSMsg(*cloud_msg, *cloud);
@@ -404,6 +409,117 @@ void cylinderCallback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     pub1.publish(output);
 }
 
+void boardCallback (const sensor_msgs::CameraInfoConstPtr& cameraInfo_msg, const sensor_msgs::ImageConstPtr& image_msg)
+{
+    ros::NodeHandle nh("processing_node");
+    image_geometry::PinholeCameraModel cam_model_;
+    cam_model_.fromCameraInfo(cameraInfo_msg);
+    tf::StampedTransform transform;
+    tf::TransformListener tf_listener;
+    try
+    {
+      ros::Time acquisition_time = cameraInfo_msg->header.stamp;
+      ros::Duration timeout(1.0 / 30);
+      tf_listener.waitForTransform( "/world", cam_model_.tfFrame(), ros::Time(), ros::Duration(5.0));
+      tf_listener.lookupTransform( "/world", cam_model_.tfFrame(), ros::Time(), transform);
+     }
+    catch (tf::TransformException& ex)
+    {
+        ROS_WARN("[draw_frames] TF exception:\n%s", ex.what());
+        return;
+    }
+
+    cv_bridge::CvImagePtr image_cv;
+    cv::Mat src, src_gray, canny_out;
+    cv::RNG rng(12345);
+    try
+    {
+      image_cv = cv_bridge::toCvCopy(image_msg, sensor_msgs::image_encodings::BGR8);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+      ROS_ERROR("cv_bridge exception: %s", e.what());
+      return;
+    }
+    src = image_cv->image;
+
+    cvtColor( src, src_gray, cv::COLOR_BGR2GRAY );
+    //blur( src_gray, src_gray, cv::Size(3,3) );
+
+    int thresh;
+    nh.getParam("thresh", thresh);
+    cv::Canny( src_gray, canny_out, 0, thresh);
+    cv::dilate(canny_out, canny_out, cv::Mat(), cv::Point(-1,-1));
+    std::vector<std::vector<cv::Point> > contours;
+    std::vector<std::vector<cv::Point> > contours_new;
+    cv::findContours( canny_out, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
+    cv::Mat corners_out;
+    int blockSize, apertureSize;
+    double k;
+    nh.getParam("blockSize", blockSize);
+    nh.getParam("apertureSize", apertureSize);
+    nh.getParam("k", k);
+    cv::cornerHarris( src_gray, corners_out, blockSize, apertureSize, k );
+    std::vector<cv::RotatedRect> minRect;
+    std::vector<cv::Point> approx;
+    double area;
+    for( size_t i = 0; i < contours.size(); i++ )
+    {
+        double arcLength;
+        nh.getParam("arcLength", arcLength);
+        cv::approxPolyDP(contours[i], approx, arcLength*cv::arcLength(contours[i], true), true);
+        if( approx.size() == 4 && cv::isContourConvex(cv::Mat(approx)) )//&& fabs(contourArea(approx)) > 1000)//4 points detected in contours detect a square
+        {
+          minRect.push_back(cv::minAreaRect(approx));//returns (center, size, angle)
+          contours_new.push_back(approx);
+        }
+    }
+
+    cv::Mat drawing = cv::Mat::zeros( canny_out.size(), CV_8UC3 );
+    for( size_t i = 0; i< contours_new.size(); i++ )
+    {
+        cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
+        // contour
+        cv::drawContours( drawing, contours_new, (int)i, color);
+        //transform pixel into coordinates in the camera frame
+        cv::Point3d real_center;
+        real_center = cam_model_.projectPixelTo3dRay(cv::Point2d(minRect[i].center));
+        //identify each square in image
+        cv::putText(drawing, std::to_string(i), minRect[i].center, 0, 0.5, color);
+        //transform to world coordinates
+        geometry_msgs::PointStamped point_tmp, final_point;
+        point_tmp.header.stamp = ros::Time();
+        point_tmp.header.frame_id = cam_model_.tfFrame();
+        point_tmp.point.x = real_center.x;
+        point_tmp.point.y = real_center.y;
+        point_tmp.point.z = real_center.z;
+        tf_listener.transformPoint( "/world", point_tmp, final_point);
+
+        std::cerr << "index: " << i << std::endl;
+        std::cerr << "center : " << final_point.point << std::endl;
+    }
+
+    cv::Mat dst_norm, dst_norm_scaled;
+    cv::normalize( corners_out, dst_norm, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat() );
+    cv::convertScaleAbs( dst_norm, dst_norm_scaled );
+    for( int i = 0; i < dst_norm.rows ; i++ )
+    {
+        for( int j = 0; j < dst_norm.cols; j++ )
+        {
+            if( (int) dst_norm.at<float>(i,j) > thresh )
+            {
+                cv::circle( dst_norm_scaled, cv::Point(j,i), 5,  cv::Scalar(0), 2, 8, 0 );
+            }
+        }
+    }
+
+    sensor_msgs::ImageConstPtr image_out;
+    image_out =  cv_bridge::CvImage(std_msgs::Header(), "mono8", canny_out).toImageMsg();
+    pub4.publish(image_out);
+    sensor_msgs::ImageConstPtr image_out1;
+    image_out1 =  cv_bridge::CvImage(std_msgs::Header(), "bgr8", drawing).toImageMsg();
+    pub5.publish(image_out1);
+}
 
 int main (int argc, char** argv)
 {
@@ -412,18 +528,29 @@ int main (int argc, char** argv)
     ros::NodeHandle nh("processing_node");
     std::string cloud_topic;
     nh.getParam("cloud_topic", cloud_topic);
+    std::string image_topic;
+    nh.getParam("image_topic", image_topic);
+    std::string cameraInfo_topic;
+    nh.getParam("cameraInfo_topic", cameraInfo_topic);
 
     ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> (cloud_topic, 1, planeCallback);
+    ros::Subscriber sub1 = nh.subscribe<sensor_msgs::PointCloud2> (cloud_topic, 1, cylinderCallback);
+
+    message_filters::Subscriber<sensor_msgs::CameraInfo> cameraInfo_msg(nh, cameraInfo_topic, 1);
+    message_filters::Subscriber<sensor_msgs::Image> image_msg(nh, image_topic, 1);
+    message_filters::TimeSynchronizer<sensor_msgs::CameraInfo,sensor_msgs::Image> sync(cameraInfo_msg, image_msg, 10);
+    sync.registerCallback(boost::bind(&boardCallback, _1, _2));
+    //ros::Subscriber sub2 = nh.subscribe<sensor_msgs::Image> (image_topic, 1, boardCallback);
 
     pub = nh.advertise<sensor_msgs::PointCloud2> ("output_plane",1);
     pub3 = nh.advertise<experiment_1_msgs::InfoBoard> ("board_positions", 1);
 
-    ros::Subscriber sub1 = nh.subscribe<sensor_msgs::PointCloud2> (cloud_topic, 1, cylinderCallback);
+    pub4 = nh.advertise<sensor_msgs::Image> ("board_square_selection",1);
+    pub5 = nh.advertise<sensor_msgs::Image> ("boardCanny",1);
 
     pub2 = nh.advertise<experiment_1_msgs::InfoPieces> ("pieces_positions", 1);
-    //ros::Duration(1).sleep();//to make sure no message gets lost
-
     pub1 = nh.advertise<sensor_msgs::PointCloud2> ("output_cylinders", 1);
+
     /*
     clust1 = nh.advertise<sensor_msgs::PointCloud2> ("cluster_1",1);
     clust2 = nh.advertise<sensor_msgs::PointCloud2> ("cluster_2",1);

@@ -77,7 +77,7 @@ def moveJoint (jointcmds, vel):
 
   rate = rospy.Rate(100)
   count = 0
-  while (count < 50):
+  while (count < 500):
     pub.publish(jointCmd)
     count = count + 1
     rate.sleep()

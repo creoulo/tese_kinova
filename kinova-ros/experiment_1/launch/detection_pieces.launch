@@ -2,6 +2,8 @@
   <node name="processing_node" pkg="experiment_1" type="filtering_and_segmentation">
     <rosparam>
       cloud_topic: "/camera/depth/points"
+      image_topic: "/camera/color/image_raw"
+      cameraInfo_topic: "/camera/color/camera_info"
       frame_id: "/camera_link_optical"
       voxel_leaf_size: 0.02 <!-- mm -->
       x_filter_min: -2.5 <!-- m -->
@@ -27,6 +29,11 @@
       max_cluster_size: 5000
       radius_search: 0.02
       k_nearest_neighbors: 15
+      arcLength: 0.01
+      thresh: 155
+      blockSize: 7
+      apertureSize: 3
+      k: 0.04
     </rosparam>
   </node>
 </launch>

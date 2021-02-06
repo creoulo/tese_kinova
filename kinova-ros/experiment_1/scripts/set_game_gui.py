@@ -33,8 +33,8 @@ poses_blue = List_2()
 red_model_name = ['red_cylinder_short','red_cylinder_short_0', 'red_cylinder_short_1', 'red_cylinder_short_2', 'red_cylinder_short_3']#for jaco tic_tac_toe_kinect_short
 blue_model_name = ['blue_cylinder_short','blue_cylinder_short_0', 'blue_cylinder_short_1', 'blue_cylinder_short_2', 'blue_cylinder_short_3']#for jaco tic_tac_toe_kinect_short
 game_state = ["","","","","","","","",""]
-h = str(0.02) #height of the pieces needed to obtain the moves for the robot
-win = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(1,5,8),(0,4,8),(2,4,6)]
+h = str(0.05) #height of the pieces needed to obtain the moves for the robot
+win = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
 global r, c
 global board_coordinates
 global pieces_coordinates
@@ -192,7 +192,7 @@ def moveInGazebo( x, y, color):
     state_msg.reference_frame = 'world'
     state_msg.pose.position.x = x
     state_msg.pose.position.y = y
-    state_msg.pose.position.z = 0.6#float(h) #default value related to the height of the piece
+    state_msg.pose.position.z = float(h) #default value related to the height of the piece
     #q = quaternion_from_euler(0, -pi, 0)
     #state_msg.pose.orientation = Quaternion(x = q[0], y = q[1], z = q[2], w = q[3])
 
@@ -357,16 +357,16 @@ def b_click( b, r, c):
             #show where robot plays on grid
             b_b = get_button(r, c) #returns string with button
             b_b["text"] = "BLUE"
-
+            '''
             moveInGazebo(rx, ry, "blue") #move directly in gazeb without the arm
-            print "Blue move: ", resp
+            #print "Blue move: ", resp
             '''
             rx = str(rx)
             ry = str(ry)
             #execute pick and place
             cmd = 'rosrun experiment_1 pick_up_and_place.py ' + x + ' ' + y + ' ' + h + ' ' + rx + ' ' + ry + ' ' + h
             os.system(cmd)
-            '''
+
 
     elif b["text"] != " " and endGame() == "NOTHING":
         messagebox.showerror("Tic-Tac-Toe", "Position already occupied")
@@ -393,6 +393,12 @@ def b_click( b, r, c):
 
         except rospy.ServiceException, e:
             print "Service call failed: %s" % e
+
+        global pieces_coordinates, board_coordinates
+        board_coordinates = rospy.wait_for_message('/processing_node/board_positions', InfoBoard)
+        board_coordinates = board_coordinates.coord
+        pieces_coordinates = rospy.wait_for_message('/processing_node/pieces_positions', InfoPieces)
+        getPieces()
 
 #Start new Game for the gui
 def new():

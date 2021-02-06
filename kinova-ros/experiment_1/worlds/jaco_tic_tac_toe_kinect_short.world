@@ -1,5 +1,17 @@
 <sdf version='1.6'>
   <world name='default'>
+  <physics type='ode'>
+    <ode>
+    <solver>
+    <type>quick</type>
+    </solver>
+    </ode>
+    <max_step_size>0.002</max_step_size>
+    <real_time_factor>1</real_time_factor>
+    <real_time_update_rate>50</real_time_update_rate>
+    <gravity>0 0 -9.8</gravity>
+  </physics>
+
     <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
       <pose frame=''>0 0 10 0 -0 0</pose>
@@ -367,7 +379,7 @@
     </model>
 
     <model name='blue_cylinder_short_0'>
-      <link name='blue_cylinder_short_link'>
+      <link name='blue_cylinder_short_0_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -471,7 +483,7 @@
     </model>
 
     <model name='blue_cylinder_short_1'>
-      <link name='blue_cylinder_short_link'>
+      <link name='blue_cylinder_short_1_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -575,7 +587,7 @@
     </model>
 
     <model name='blue_cylinder_short_2'>
-      <link name='blue_cylinder_short_link'>
+      <link name='blue_cylinder_short_2_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -591,7 +603,6 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>-0.4 -0.34 0 0 -0 0</pose>
         <gravity>1</gravity>
         <visual name='visual'>
           <geometry>
@@ -680,7 +691,7 @@
     </model>
 
     <model name='blue_cylinder_short_3'>
-      <link name='blue_cylinder_short_link'>
+      <link name='blue_cylinder_short_3_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -784,7 +795,7 @@
     </model>
 
     <model name='red_cylinder_short'>
-      <link name='link'>
+      <link name='red_cylinder_short_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -888,7 +899,7 @@
     </model>
 
     <model name='red_cylinder_short_0'>
-      <link name='link'>
+      <link name='red_cylinder_short_0_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -992,7 +1003,7 @@
     </model>
 
     <model name='red_cylinder_short_1'>
-      <link name='link'>
+      <link name='red_cylinder_short_1_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -1096,7 +1107,7 @@
     </model>
 
     <model name='red_cylinder_short_2'>
-      <link name='link'>
+      <link name='red_cylinder_short_2_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
@@ -1200,7 +1211,7 @@
     </model>
 
     <model name='red_cylinder_short_3'>
-      <link name='link'>
+      <link name='red_cylinder_short_3_link'>
         <inertial>
           <mass>1</mass>
           <inertia>
