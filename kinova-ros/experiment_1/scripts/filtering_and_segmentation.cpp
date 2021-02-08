@@ -172,6 +172,7 @@ void planeCallback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     float x = centroid.coeff(0,0);
     float y = centroid.coeff(1,0);
     float z = centroid.coeff(2,0);
+    //std::cerr << "depth_value: " << z << std::endl;
     tf::Vector3 point(x, y, z);
     tf::Vector3 point_final = transform * point;
     float w = 0.1;
@@ -409,19 +410,18 @@ void cylinderCallback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     pub1.publish(output);
 }
 
-void boardCallback (const sensor_msgs::CameraInfoConstPtr& cameraInfo_msg, const sensor_msgs::ImageConstPtr& image_msg)
+void boardCallback (const sensor_msgs::ImageConstPtr& image_msg, const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
     ros::NodeHandle nh("processing_node");
-    image_geometry::PinholeCameraModel cam_model_;
-    cam_model_.fromCameraInfo(cameraInfo_msg);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::fromROSMsg(*cloud_msg, *cloud);
+    std::string frame_id;
+    nh.getParam("frame_id", frame_id);
     tf::StampedTransform transform;
     tf::TransformListener tf_listener;
     try
     {
-      ros::Time acquisition_time = cameraInfo_msg->header.stamp;
-      ros::Duration timeout(1.0 / 30);
-      tf_listener.waitForTransform( "/world", cam_model_.tfFrame(), ros::Time(), ros::Duration(5.0));
-      tf_listener.lookupTransform( "/world", cam_model_.tfFrame(), ros::Time(), transform);
+      tf_listener.waitForTransform( "/world", frame_id, ros::Time(), ros::Duration(5.0));
      }
     catch (tf::TransformException& ex)
     {
@@ -474,51 +474,51 @@ void boardCallback (const sensor_msgs::CameraInfoConstPtr& cameraInfo_msg, const
           contours_new.push_back(approx);
         }
     }
-
+    //remove biggest square
+    int pop;
+    float size_0 = minRect[0].size.area();
+    for (int i = 1; i < minRect.size() - 1; i++)
+    {
+        if (size_0 > minRect[i].size.area())
+          pop = 0;
+        else
+          pop = i;
+    }
+    minRect.erase(minRect.begin()+pop);
+    contours_new.erase(contours_new.begin()+pop);
     cv::Mat drawing = cv::Mat::zeros( canny_out.size(), CV_8UC3 );
+    experiment_1_msgs::InfoBoard board_positions;
     for( size_t i = 0; i< contours_new.size(); i++ )
     {
         cv::Scalar color = cv::Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
         // contour
         cv::drawContours( drawing, contours_new, (int)i, color);
         //transform pixel into coordinates in the camera frame
-        cv::Point3d real_center;
-        real_center = cam_model_.projectPixelTo3dRay(cv::Point2d(minRect[i].center));
+        pcl::PointXYZRGB tmp = cloud->at(minRect[i].center.x, minRect[i].center.y);
+
         //identify each square in image
         cv::putText(drawing, std::to_string(i), minRect[i].center, 0, 0.5, color);
         //transform to world coordinates
         geometry_msgs::PointStamped point_tmp, final_point;
         point_tmp.header.stamp = ros::Time();
-        point_tmp.header.frame_id = cam_model_.tfFrame();
-        point_tmp.point.x = real_center.x;
-        point_tmp.point.y = real_center.y;
-        point_tmp.point.z = real_center.z;
+        point_tmp.header.frame_id = frame_id;
+        point_tmp.point.x = tmp.x;
+        point_tmp.point.y = tmp.y;
+        point_tmp.point.z = tmp.z;
         tf_listener.transformPoint( "/world", point_tmp, final_point);
 
-        std::cerr << "index: " << i << std::endl;
-        std::cerr << "center : " << final_point.point << std::endl;
-    }
+        experiment_1_msgs::Coordinates data;
+        data.x = final_point.point.x;
+        data.y = final_point.point.y;
+        board_positions.coord.push_back(data);
 
-    cv::Mat dst_norm, dst_norm_scaled;
-    cv::normalize( corners_out, dst_norm, 0, 255, cv::NORM_MINMAX, CV_32FC1, cv::Mat() );
-    cv::convertScaleAbs( dst_norm, dst_norm_scaled );
-    for( int i = 0; i < dst_norm.rows ; i++ )
-    {
-        for( int j = 0; j < dst_norm.cols; j++ )
-        {
-            if( (int) dst_norm.at<float>(i,j) > thresh )
-            {
-                cv::circle( dst_norm_scaled, cv::Point(j,i), 5,  cv::Scalar(0), 2, 8, 0 );
-            }
-        }
+        //std::cerr << "index: " << i << std::endl;
+        //std::cerr << "center : " << final_point.point << std::endl;
     }
-
+    pub3.publish(board_positions);
     sensor_msgs::ImageConstPtr image_out;
-    image_out =  cv_bridge::CvImage(std_msgs::Header(), "mono8", canny_out).toImageMsg();
+    image_out =  cv_bridge::CvImage(std_msgs::Header(), "bgr8", drawing).toImageMsg();
     pub4.publish(image_out);
-    sensor_msgs::ImageConstPtr image_out1;
-    image_out1 =  cv_bridge::CvImage(std_msgs::Header(), "bgr8", drawing).toImageMsg();
-    pub5.publish(image_out1);
 }
 
 int main (int argc, char** argv)
@@ -533,16 +533,15 @@ int main (int argc, char** argv)
     std::string cameraInfo_topic;
     nh.getParam("cameraInfo_topic", cameraInfo_topic);
 
-    ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> (cloud_topic, 1, planeCallback);
+    //ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> (cloud_topic, 1, planeCallback);
     ros::Subscriber sub1 = nh.subscribe<sensor_msgs::PointCloud2> (cloud_topic, 1, cylinderCallback);
 
-    message_filters::Subscriber<sensor_msgs::CameraInfo> cameraInfo_msg(nh, cameraInfo_topic, 1);
     message_filters::Subscriber<sensor_msgs::Image> image_msg(nh, image_topic, 1);
-    message_filters::TimeSynchronizer<sensor_msgs::CameraInfo,sensor_msgs::Image> sync(cameraInfo_msg, image_msg, 10);
+    message_filters::Subscriber<sensor_msgs::PointCloud2> cloud_msg(nh, cloud_topic, 1);
+    message_filters::TimeSynchronizer<sensor_msgs::Image,sensor_msgs::PointCloud2> sync( image_msg, cloud_msg, 10);
     sync.registerCallback(boost::bind(&boardCallback, _1, _2));
-    //ros::Subscriber sub2 = nh.subscribe<sensor_msgs::Image> (image_topic, 1, boardCallback);
 
-    pub = nh.advertise<sensor_msgs::PointCloud2> ("output_plane",1);
+    //pub = nh.advertise<sensor_msgs::PointCloud2> ("output_plane",1);
     pub3 = nh.advertise<experiment_1_msgs::InfoBoard> ("board_positions", 1);
 
     pub4 = nh.advertise<sensor_msgs::Image> ("board_square_selection",1);

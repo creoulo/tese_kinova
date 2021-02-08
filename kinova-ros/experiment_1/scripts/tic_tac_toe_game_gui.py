@@ -438,7 +438,7 @@ def new():
 if __name__ == '__main__':
   try:
     #--------------------------------------------------------------------------
-    rospy.init_node('gameplay')
+    rospy.init_node('tic_tac_toe')
     initServices()
     getPosBoard = rospy.ServiceProxy('/experiment_1_msgs/PosBoard', experiment_1_msgs.srv.PosBoard )
     getPieces = rospy.ServiceProxy('/experiment_1_msgs/PosPiece', experiment_1_msgs.srv.PosPiece)

@@ -84,7 +84,7 @@ def initServices(move_group_arm, move_group_gripper):
 
 #define all the handlers
 def cart_path_handler(req):
-   (path, q) = move_group_arm.compute_cartesian_path(req.waypoints, 0.01, 0, True)
+   (path, q) = move_group_arm.compute_cartesian_path(req.waypoints, 0.04, 0, True)
    return CartPathResponse(path, q)
 
 def named_target_arm_handler(req):
@@ -122,7 +122,7 @@ def moveJoint (jointcmds):
 
   rate = rospy.Rate(100)
   count = 0
-  while (count < 50):
+  while (count < 500):
     pub.publish(jointCmd)
     count = count + 1
     rate.sleep()
@@ -201,6 +201,7 @@ if __name__ == '__main__':
     pick_over_pose = copy.deepcopy(pick_pose)
     pick_over_pose.position.z = 3 * pick_pose.position.z
     rospy.loginfo("Going to pose over piece")
+    #move_group_arm.set_start_state_to_current_state()
     move_group_arm.set_pose_target(pick_over_pose)
     move_group_arm.go(wait=True)
     move_group_arm.clear_pose_targets()
@@ -239,6 +240,7 @@ if __name__ == '__main__':
     place_over_pose = copy.deepcopy(place_pose)
     place_over_pose.position.z = 3 * place_pose.position.z
     rospy.loginfo("Going to place the piece on board")
+    #move_group_arm.set_start_state_to_current_state()
     move_group_arm.set_pose_target(place_over_pose)
     move_group_arm.go(wait=True)
     move_group_arm.clear_pose_targets()
