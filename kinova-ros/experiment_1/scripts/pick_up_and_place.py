@@ -10,7 +10,7 @@ import os
 import actionlib
 import tf2_ros
 import experiment_1_msgs.srv
-
+import time
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 from tf.transformations import *
@@ -159,6 +159,7 @@ if __name__ == '__main__':
 
     rospy.sleep(2)
     #add a "wall" as a collision object to limit the space that the robot can move
+
     upper_bond_pose = PoseStamped()
     upper_bond_pose.header.frame_id = robot.get_planning_frame()
     upper_bond_pose.pose.position.x = 0
@@ -172,7 +173,7 @@ if __name__ == '__main__':
     back_bond_pose.pose.position.z = 0.5
     scene.add_box('back_bond',back_bond_pose, size = (2,0.001,1)) #add_box (self, name, pose, size=(1, 1, 1))
     rospy.sleep(2)
-
+    
     #arm
     group_arm = "arm"
     move_group_arm = MoveGroupCommander(group_arm) #this interface can be used to plan and execute motions
@@ -196,6 +197,7 @@ if __name__ == '__main__':
     #2 - move to pick over pose with z = z + 0.2
     #3 - downward movement to pick position
     #4 - close gripper
+    start_time = time.time()
     moveFingers([GRIPPER_OPEN, GRIPPER_OPEN, GRIPPER_OPEN])
 
     pick_over_pose = copy.deepcopy(pick_pose)
@@ -270,7 +272,7 @@ if __name__ == '__main__':
     for i in range(0, len(resp_path.path.joint_trajectory.points)-1):
         jointcmds = resp_path.path.joint_trajectory.points[i].positions
         moveJoint(jointcmds)
-
+    rospy.loginfo("Robot took %f s to make the move", time.time()-start_time)
     go_home("Home")#this movement is not computed with compute_cartesian_path
 
   except rospy.ROSInterruptException:

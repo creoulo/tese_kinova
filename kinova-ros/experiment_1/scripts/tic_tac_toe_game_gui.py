@@ -10,7 +10,7 @@ import tkSimpleDialog as simpledialog
 import tkMessageBox as messagebox
 import experiment_1_msgs.srv
 import experiment_1_msgs.msg
-
+import time
 from std_msgs.msg import *
 from geometry_msgs.msg import *
 from math import *
@@ -145,7 +145,7 @@ def boardCallback(msg):
 def piecesCallback(msg):
     global pieces_coordinates
     pieces_coordinates = msg.poses
-    print pieces_coordinates
+    #print pieces_coordinates
 
 def validateMove( r, c):
     resp =  getPosBoard(r,c)# visualize in gazebo
@@ -244,13 +244,13 @@ def maximization( depth, alpha, beta):
                 max_value = min_value
                 position = pos
             game_state[pos] = ""
-
+            '''
             if max_value >= beta:
                 r, c = transformPos(position)
                 return max_value, r, c
             if max_value > alpha:
                 alpha = max_value
-
+            '''
     r, c = transformPos(position)
     return max_value, r, c
 
@@ -277,13 +277,13 @@ def minimization( depth, alpha, beta):
                 min_value = max_value
                 position = pos
             game_state[pos] = ""
-
+            '''
             if min_value <= alpha:
                 r, c = transformPos(position)
                 return min_value, r, c
             if min_value < alpha:
                 beta = min_value
-
+            '''
     r, c = transformPos(position)
     return min_value, r, c
 
@@ -326,6 +326,7 @@ def b_click( b, r, c):
     global game_state,red_model_name, blue_model_name
     if b["text"] == " " and endGame() == "NOTHING":
         b["text"] = "RED" #human played
+        b.configure(bg="red")
         resp = getPosBoard(r, c) # visualize in gazebo
         rx = resp.x
         ry = resp.y
@@ -348,7 +349,9 @@ def b_click( b, r, c):
             #print "X : ", x, "Y :", y
 
             #place vars
+            start_time = time.time()
             max_value, r, c = maximization(level, -2, 2)
+            print "Robot took ", time.time()-start_time, "s to plan"
             resp = getPosBoard(r, c) # visualize in gazebo
             rx = resp.x
             ry = resp.y
@@ -357,7 +360,8 @@ def b_click( b, r, c):
             #show where robot plays on grid
             b_b = get_button(r, c) #returns string with button
             b_b["text"] = "BLUE"
-            '''
+            b_b.configure(bg="blue")
+
             moveInGazebo(rx, ry, "blue") #move directly in gazeb without the arm
             #print "Blue move: ", resp
             '''
@@ -366,7 +370,7 @@ def b_click( b, r, c):
             #execute pick and place
             cmd = 'rosrun experiment_1 pick_up_and_place.py ' + x + ' ' + y + ' ' + h + ' ' + rx + ' ' + ry + ' ' + h
             os.system(cmd)
-
+            '''
 
     elif b["text"] != " " and endGame() == "NOTHING":
         messagebox.showerror("Tic-Tac-Toe", "Position already occupied")
@@ -408,6 +412,7 @@ def new():
     #ask for dificulty wanted
     level = simpledialog.askstring("Input", "Choose dificulty between 1(easiest) and 8(hardest):",parent=main)
     level = int(level)
+    if level%2 != 0: level = level + 1
 
     # Buttons for the grid
     b1 = Button(main, text=" ", font=("Helvetica",20), height=3, width=6, bg="Gray", command=lambda: b_click(b1,1,1))

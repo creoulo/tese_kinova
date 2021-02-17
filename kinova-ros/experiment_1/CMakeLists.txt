@@ -137,14 +137,15 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
-   scripts/filtering_and_segmentation.cpp
- )
+# add_library(${PROJECT_NAME}
+#    scripts/filtering_and_segmentation_traffic.cpp
+# )
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(filtering_and_segmentation scripts/filtering_and_segmentation.cpp)
+add_executable(filtering_and_segmentation_traffic scripts/filtering_and_segmentation_traffic.cpp)
 
 
 ## Add cmake target dependencies of the library
@@ -169,7 +170,12 @@ target_link_libraries(filtering_and_segmentation
    ${OpenCV_LIBRARIES}
    ${OpenCV2_LIBRARIES}
  )
-
+ target_link_libraries(filtering_and_segmentation_traffic
+    ${catkin_LIBRARIES}
+    ${PCL_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+    ${OpenCV2_LIBRARIES}
+  )
 #############
 ## Install ##
 #############

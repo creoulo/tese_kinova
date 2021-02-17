@@ -6,10 +6,11 @@
     <type>quick</type>
     </solver>
     </ode>
-    <max_step_size>0.002</max_step_size>
+    <max_step_size>0.000002</max_step_size>
     <real_time_factor>1</real_time_factor>
-    <real_time_update_rate>50</real_time_update_rate>
+    <real_time_update_rate>500000</real_time_update_rate>
     <gravity>0 0 -9.8</gravity>
+    <update_rate>-1</update_rate>
   </physics>
 
     <light name='sun' type='directional'>

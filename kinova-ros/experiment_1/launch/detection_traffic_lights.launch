@@ -1,0 +1,59 @@
+<launch>
+  <node name="processing_node_traffic" pkg="experiment_1" type="filtering_and_segmentation_traffic">
+    <rosparam>
+      cloud_topic: "/camera/depth/points"
+      image_topic: "/camera/color/image_raw"
+      cameraInfo_topic: "/camera/color/camera_info"
+      frame_id: "/camera_link_optical"
+      voxel_leaf_size: 0.02 <!-- mm -->
+
+      x_filter_min: -2.5 <!-- m -->
+      x_filter_max: 2.5 <!-- m -->
+      y_filter_min: -2.5 <!-- m -->
+      y_filter_max: 2.5 <!-- m -->
+      z_filter_min: -2.5 <!-- m -->
+      z_filter_max: 2.5 <!-- m -->
+
+      r_max_y: 60
+      r_min_y: -40
+      g_max_y: 255
+      g_min_y: 100
+      b_max_y: 255
+      b_min_y: 100
+
+      r_max_g: 90
+      r_min_g: 0
+      g_max_g: 255
+      g_min_g: 100
+      b_max_g: 90
+      b_min_g: 0
+
+      r_max_r: 255
+      r_min_r: 0
+      g_max_r: 100
+      g_min_r: 0
+      b_max_r: 255
+      b_min_r: 120
+
+      cluster_tolerance_g: 0.03 <!-- m -->
+      min_cluster_size_g: 5
+      max_cluster_size_g: 5000
+
+      cluster_tolerance_y: 0.03 <!-- m -->
+      min_cluster_size_y: 5
+      max_cluster_size_y: 5000
+
+      cluster_tolerance_r: 0.03 <!-- m -->
+      min_cluster_size_r: 5
+      max_cluster_size_r: 5000
+
+      radius_search: 0.02
+      k_nearest_neighbors: 15
+      arcLength: 0.01
+      thresh: 155
+      blockSize: 7
+      apertureSize: 3
+      k: 0.04
+    </rosparam>
+  </node>
+</launch>
